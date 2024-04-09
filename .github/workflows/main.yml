@@ -27,5 +27,5 @@ jobs:
 
       - name: Run tests
         run: dotnet test --no-build --verbosity normal \
-            --test-assembly-path **/Weather App.Tests/bin/Debug/net8.0/Weather App.Tests.dll  # Adjust path and .NET version if needed
+              --test-assembly-path **/Weather App.Tests/bin/Debug/net8.0/Weather App.Tests.dll  # Adjust path and .NET version if needed
         
