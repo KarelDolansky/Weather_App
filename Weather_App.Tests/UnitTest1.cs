@@ -5,7 +5,7 @@ namespace Weather_App.Tests
         [Fact]
         public void Test1()
         {
-
+            Assert.True(true);  
         }
     }
 }
