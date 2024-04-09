@@ -25,7 +25,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Run tests
+     - name: Run tests
         run: dotnet test --no-build --verbosity normal \
-          --test-assembly-path **/Weather App.Tests/bin/Debug/net8.0/Weather App.Tests.dll  # Adjust path and .NET version if needed
-        
+             --test-assembly-path **/Weather\ App.Tests/bin/Debug/netcoreapp3.1/Weather\ App.Tests.dll  # Adjust path and .NET version if needed
