@@ -19,7 +19,7 @@
             //trasformace z location na lat a lon
             PositionData position =_positionServiceHandler.CallApi(location).Result;
             //ziskani dat z api
-            _weatherServiceHandler.CallApi(position.Lat,position.Lon);
+            _weatherServiceHandler.CallApi(position.lat,position.lon);
             return "done";
             //zpracovani dat
             //ikonka

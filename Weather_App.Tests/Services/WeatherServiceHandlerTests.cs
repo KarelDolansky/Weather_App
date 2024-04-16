@@ -14,15 +14,15 @@ namespace Weather_App.Tests
                 StatusCode = HttpStatusCode.OK,
                 Content = new StringContent("{\"hourly\": { \"temperature_2m\": [10.9]}}")
             }));
-            var weatherDataTransformationsMock = new Mock<IWeatherDataTransformations>();
+            var mockWeatherDataTransformations = new Mock<IWeatherDataTransformations>();
 
             // Mock StringToWeatherData to return a valid WeatherData object
             var mockWeatherData = new Mock<WeatherData>();
             
-            weatherDataTransformationsMock.Setup(x => x.StringToWeatherData(It.IsAny<string>())).Returns(new WeatherData(hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 },null,null,null,null,null)));
+            mockWeatherDataTransformations.Setup(x => x.StringToWeatherData(It.IsAny<string>())).Returns(new WeatherData(hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 },null,null,null,null,null)));
 
-            var weatherServiceHandler = new WeatherServiceHandler(httpClient, weatherDataTransformationsMock.Object);
-            var weatherData = await weatherServiceHandler.CallApi(50.0, 10.0);
+            var weatherServiceHandler = new WeatherServiceHandler(httpClient, mockWeatherDataTransformations.Object);
+            var weatherData = await weatherServiceHandler.CallApi("50.0", "10.0");
             Assert.NotNull(weatherData);
         }
 
@@ -34,9 +34,9 @@ namespace Weather_App.Tests
             {
                 StatusCode = HttpStatusCode.NotFound
             }));
-            var weatherDataTransformations = new Mock<IWeatherDataTransformations>();
-            var weatherServiceHandler = new WeatherServiceHandler(httpClient, weatherDataTransformations.Object);
-            await Assert.ThrowsAsync<Exception>(() => weatherServiceHandler.CallApi(50.0, 10.0));
+            var mockWeatherDataTransformations = new Mock<IWeatherDataTransformations>();
+            var weatherServiceHandler = new WeatherServiceHandler(httpClient, mockWeatherDataTransformations.Object);
+            await Assert.ThrowsAsync<Exception>(() => weatherServiceHandler.CallApi("50.0", "10.0"));
         }
     }
 

@@ -3,14 +3,14 @@
     //string Licence,
     //string OsmType,
     //long OsmId,
-    double Lat,
-    double Lon,
+    string lat,
+    string lon,
     //string Class,
     //string Type,
     //int PlaceRank,
     //double Importance,
     //string Addresstype,
-    string Name
-    //string DisplayName,
+    //string name
+    string display_name
     //List<double> Boundingbox
 );
