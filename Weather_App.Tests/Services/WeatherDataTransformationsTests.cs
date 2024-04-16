@@ -13,6 +13,13 @@ namespace Weather_App.Tests.Services
             Assert.IsType<WeatherData>(data);
             Assert.Equal(10.9, data.hourly.temperature_2m[0]);
             Assert.All(data.hourly.temperature_2m, x => Assert.True(x >= 0));
+            Assert.All(data.hourly.rain,x=> Assert.True(x >=0));
+            Assert.All(data.hourly.precipitation, x => Assert.True(x >= 0));
+            Assert.All(data.hourly.snow_depth, x => Assert.True(x >= 0));
+            Assert.All(data.hourly.snowfall, x => Assert.True(x >= 0));
+            Assert.All(data.hourly.showers, x => Assert.True(x >= 0));
+            Assert.All(data.hourly.time, x => Assert.True(DateTime.TryParse(x, out _)));
+            Assert.Equal(24, data.hourly.time.Count);
         }
     }
 }
