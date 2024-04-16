@@ -30,4 +30,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: KarelDolansky/Weather_App
-          file: Weather_App.Tests/coverage.json
+          file: Weather_App.Tests/coverage.cobertura.xml
