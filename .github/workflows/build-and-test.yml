@@ -23,10 +23,11 @@ jobs:
         run: dotnet restore
 
       - name: Run tests
-        run: dotnet test /p:CollectCoverage=true
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: KarelDolansky/Weather_App
+          file: Weather_App.Tests/coverage.cobertura.xml

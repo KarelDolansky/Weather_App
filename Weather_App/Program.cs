@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Weather_App.Data;
+using Weather_App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<IPositionDataTransformations, PositionDataTransformations>();
+builder.Services.AddSingleton<IPositionServiceHandler, PositionServiceHandler>();
+builder.Services.AddSingleton<IWeatherDataTransformations, WeatherDataTransformations>();
+builder.Services.AddSingleton<IWeatherServiceHandler, WeatherServiceHandler>();
+builder.Services.AddSingleton<IWeatherService, WeatherService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
