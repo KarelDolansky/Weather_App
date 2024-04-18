@@ -18,9 +18,7 @@ namespace Weather_App.Services
 
         public async Task<PositionData> CallApi(string position)
         {
-
-            string url = $"https://nominatim.openstreetmap.org/search?q={position}&format=json&limit=1";
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "WeatherApp");
+            string url = $"https://geocoding-api.open-meteo.com/v1/search?name={position}&count=1&language=en&format=json";
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)

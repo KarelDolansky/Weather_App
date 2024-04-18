@@ -10,7 +10,7 @@ namespace Weather_App.Services
 {
     public interface IWeatherServiceHandler
     {
-        public Task<WeatherData> CallApi(string latitude, string longitude);
+        public Task<WeatherData> CallApi(double latitude, double longitude);
     }
 
     public class WeatherServiceHandler: IWeatherServiceHandler
@@ -23,7 +23,7 @@ namespace Weather_App.Services
             _weatherDataTransformations = weatherDataTransformations;
         }
 
-        public async Task<WeatherData> CallApi(string latitude, string longitude)
+        public async Task<WeatherData> CallApi(double latitude, double longitude)
         {
             string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m,precipitation,rain,showers,snowfall,snow_depth&timezone=Europe%2FBerlin&forecast_days=1";
             HttpResponseMessage response = await _httpClient.GetAsync(url);
