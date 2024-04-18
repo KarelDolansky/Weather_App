@@ -25,11 +25,22 @@ namespace Weather_App.Controllers
         {
             return View();
         }
+        //[HttpPost]
+        //public string Weather(string location)
+        //{
+        //    return _weatherService.GetWeather(location);
+        //}
+
         [HttpPost]
-        public string Weather(string location)
+        public IActionResult WeatherBox(string location)
         {
-            return _weatherService.GetWeather(location);
+            // Mùžete provést jakékoliv další operace, jako je napøíklad získání dat o poèasí na základì zadané lokace.
+            ViewData["Location"] = location;
+
+            return PartialView("_WeatherBox");
         }
+
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -37,5 +48,6 @@ namespace Weather_App.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }
