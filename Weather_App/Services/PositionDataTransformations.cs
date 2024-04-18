@@ -10,8 +10,9 @@ namespace Weather_App.Services
     {
         public PositionData StringToPositionData(string jsonString)
         {
-            PositionData data = JsonSerializer.Deserialize<PositionData>(jsonString);
-            return data;
+            List<PositionData> data = JsonSerializer.Deserialize<List<PositionData>>(jsonString);
+
+            return data[0];
         }
     }
 }

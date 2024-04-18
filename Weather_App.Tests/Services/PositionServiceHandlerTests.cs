@@ -5,24 +5,24 @@ using Weather_App.Services;
 
 public class PositionServiceHandlerTests
 {
-    //[Fact]
-    //public async Task CallApi_ValidPosition_ReturnsPositionData()
-    //{
-    //    // Arrange
-    //    string position = "Prague, Czech Republic";
-    //    var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
-    //    {
-    //        StatusCode = HttpStatusCode.OK,
-    //        Content = new StringContent("{\"results\":[{\"id\":3071961,\"name\":\"Liberec\",\"latitude\":50.76711,\"longitude\":15.05619,\"elevation\":359,\"feature_code\":\"PPLA\",\"country_code\":\"CZ\",\"admin1_id\":3339541,\"admin2_id\":3071960,\"admin3_id\":11924204,\"timezone\":\"Europe/Prague\",\"population\":97770,\"country_id\":3077311,\"country\":\"Czechia\",\"admin1\":\"Liberecký kraj\",\"admin2\":\"Liberec District\",\"admin3\":\"Liberec\"}],\"generationtime_ms\":1.0370016}")
-    //    }));
+    [Fact]
+    public async Task CallApi_ValidPosition_ReturnsPositionData()
+    {
+        // Arrange
+        string position = "Prague, Czech Republic";
+        var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("{\"hourly\": { \"temperature_2m\": [10.9]}}")
+        }));
 
-    //    var mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
-    //    mockPositionDataTransformations.Setup(m => m.StringToPositionData(It.IsAny<string>()))
-    //        .Returns(new PositionData (new List<Results>("Liberec",50.7702648, 15.0583947)));
-    //    var positionServiceHandler = new PositionServiceHandler(httpClient, mockPositionDataTransformations.Object);
-    //    var positionData = await positionServiceHandler.CallApi(position);
-    //    Assert.NotNull(positionData);
-    //}
+        var mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
+        mockPositionDataTransformations.Setup(m => m.StringToPositionData(It.IsAny<string>()))
+            .Returns(new PositionData ( "50.7702648", "15.0583947", "Liberec, okres Liberec, Liberecký kraj, Severovýchod, Česko" ));
+        var positionServiceHandler = new PositionServiceHandler(httpClient, mockPositionDataTransformations.Object);
+        var positionData = await positionServiceHandler.CallApi(position);
+        Assert.NotNull(positionData);
+    }
 
     [Fact]
     public async Task CallApi_ApiCallFails_ThrowsException()

@@ -18,9 +18,9 @@ namespace Weather_App.Tests.Services
 
             // Assert
             Assert.NotNull(positionData);
-            Assert.Equal(50.7702648, positionData.results[0].latitude);
-            Assert.Equal(15.0583947, positionData.results[0].longitude);
-            Assert.Equal("Liberec, okres Liberec, Liberecký kraj, Severovýchod, Česko", positionData.results[0].name);
+            Assert.Equal("50.7702648", positionData.lat);
+            Assert.Equal("15.0583947", positionData.lon);
+            Assert.Equal("Liberec, okres Liberec, Liberecký kraj, Severovýchod, Česko", positionData.display_name);
         }
 
         [Fact]
