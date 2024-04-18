@@ -17,9 +17,9 @@
         public string GetWeather(string location)
         {
             //trasformace z location na lat a lon
-            PositionData position =_positionServiceHandler.CallApi(location).Result;
+            PositionData position = _positionServiceHandler.CallApi(location).Result;
             //ziskani dat z api
-            _weatherServiceHandler.CallApi(position.lat,position.lon);
+            _weatherServiceHandler.CallApi(position.results[0].latitude, position.results[0].longitude);
             return "done";
             //zpracovani dat
             //ikonka
