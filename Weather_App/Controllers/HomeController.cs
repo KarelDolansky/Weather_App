@@ -33,7 +33,7 @@ namespace Weather_App.Controllers
         public IActionResult Weather(string location)
         {
             WeatherData weatherData = _weatherService.GetWeather(location);
-            HttpContext.Session.Set<WeatherData>("UserWeatherData", weatherData);
+            //HttpContext.Session.Set<WeatherData>("UserWeatherData", weatherData);
             return View();
         }
 
