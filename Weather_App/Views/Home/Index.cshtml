@@ -1,50 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Počasí";
 }
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
-@* <style>
-    #weatherFormDiv {
-        margin-top: 20px;
-    }
-
-    #weatherContainer {
-        margin-top: 20px;
-    }
-</style> *@
 
 <div class="text-center">
-        <h1 class="desplay-4">Weather Application</h1>
-        <form id="weatherForm" asp-controller="Home" asp-action="WeatherBox" method="post">
-            <div>
-                <input type="text" name="location" id="locationInput" required />
-                <input type="submit" value="submit" />
-            </div>
-        </form>
+    <h1 class="desplay-4">Počasí</h1>
+    <form id="weatherForm" asp-controller="Home" asp-action="Weather" method="post">
+        <div>
+            <input type="text" name="location" id="locationInput" required />
+            <input type="submit" value="submit" />
+        </div>
+    </form>
 </div>
-<div id="weatherContainer"></div>
-
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            $('#weatherForm').submit(function (event) {
-                event.preventDefault(); // Zabraňuje výchozímu chování formuláře
-
-                var formData = $(this).serialize(); // Získá data formuláře
-
-                $.ajax({
-                    url: '@Url.Action("WeatherBox", "Home")',
-                    type: 'POST',
-                    data: formData,
-                    success: function (result) {
-                        $('#weatherContainer').html(result); // Zobrazí výsledek pod formulářem
-                    },
-                    error: function () {
-                        console.error('Nepodařilo se načíst částečné zobrazení počasí.');
-                    }
-                });
-            });
-        });
-    </script>
-}

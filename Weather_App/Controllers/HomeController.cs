@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Weather_App.Models;
@@ -9,6 +10,8 @@ namespace Weather_App.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IWeatherService _weatherService;
+        [BindProperty]
+        public WeatherData WeatherData { get; set; }
 
         public HomeController(ILogger<HomeController> logger, IWeatherService weatherService)
         {
@@ -18,6 +21,7 @@ namespace Weather_App.Controllers
 
         public IActionResult Index()
         {
+            ViewData["Title"] = "Poèasí";
             return View();
         }
 
@@ -25,22 +29,20 @@ namespace Weather_App.Controllers
         {
             return View();
         }
-        //[HttpPost]
-        //public string Weather(string location)
-        //{
-        //    return _weatherService.GetWeather(location);
-        //}
-
         [HttpPost]
-        public IActionResult WeatherBox(string location)
+        public IActionResult Weather(string location)
         {
-            // Mùžete provést jakékoliv další operace, jako je napøíklad získání dat o poèasí na základì zadané lokace.
-            ViewData["Location"] = location;
-
-            return PartialView("_WeatherBox");
+            WeatherData weatherData = _weatherService.GetWeather(location);
+            HttpContext.Session.Set<WeatherData>("UserWeatherData", weatherData);
+            return View();
         }
 
-
+        public IActionResult WeatherMore()
+        {
+            ViewData["Title"] = "Poèasí";
+            Sesi["weatherData"] = WeatherData;
+            return View();
+        }
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
