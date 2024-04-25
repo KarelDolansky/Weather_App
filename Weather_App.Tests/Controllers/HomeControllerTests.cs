@@ -67,5 +67,33 @@ namespace Weather_App.Tests.Controllers
             // Option 2: Assert for a specific error message or model state (if applicable)
             // ...
         }
+
+        [Fact]
+        public void Privacy_ReturnsView()
+        {
+            // Arrange
+            var controller = new HomeController(null, null); // Mocks not needed for Privacy
+
+            // Act
+            var result = controller.Privacy();
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public void Error_ReturnsViewWithRequestId()
+        {
+            // Arrange
+            var controller = new HomeController(null, null); // Mocks not needed for Error
+
+            // Act
+            var result = controller.Error();
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<ErrorViewModel>(viewResult.Model);
+            Assert.NotNull(model.RequestId);
+        }
     }
 }
