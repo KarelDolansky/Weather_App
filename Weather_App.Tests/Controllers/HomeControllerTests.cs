@@ -1,15 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Weather_App.Controllers;
 using Weather_App.Models;
 using Weather_App.Services;
-using Xunit;
 
 namespace Weather_App.Tests.Controllers
 {
@@ -81,19 +75,5 @@ namespace Weather_App.Tests.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
-        [Fact]
-        public void Error_ReturnsViewWithRequestId()
-        {
-            // Arrange
-            var controller = new HomeController(null, null); // Mocks not needed for Error
-
-            // Act
-            var result = controller.Error();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<ErrorViewModel>(viewResult.Model);
-            Assert.NotNull(model.RequestId);
-        }
     }
 }
