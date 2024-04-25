@@ -3,7 +3,6 @@
     public interface IWeatherServiceHandler
     {
         public Task<WeatherData> CallApi(double latitude, double longitude);
-        public WeatherData JsonToWeatherData(string jsonString);
     }
 
     public class WeatherServiceHandler: IWeatherServiceHandler
@@ -32,11 +31,6 @@
                 // Handle API call errors (e.g., log the error)
                 throw new Exception($"API call failed with status code {response.StatusCode}");
             }
-        }
-
-        public WeatherData JsonToWeatherData(string jsonString)
-        {
-            return _weatherDataTransformations.StringToWeatherData(jsonString);
         }
     }
 }
