@@ -10,8 +10,6 @@ namespace Weather_App.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IWeatherService _weatherService;
-        [BindProperty]
-        public WeatherData WeatherData { get; set; }
 
         public HomeController(ILogger<HomeController> logger, IWeatherService weatherService)
         {
