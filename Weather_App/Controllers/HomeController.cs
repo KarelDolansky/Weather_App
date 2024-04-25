@@ -32,15 +32,7 @@ namespace Weather_App.Controllers
         [HttpPost]
         public IActionResult Weather(string location)
         {
-            WeatherData weatherData = _weatherService.GetWeather(location);
-            //HttpContext.Session.Set<WeatherData>("UserWeatherData", weatherData);
-            return View();
-        }
-
-        public IActionResult WeatherMore()
-        {
-            ViewData["Title"] = "Poèasí";
-            Sesi["weatherData"] = WeatherData;
+            ViewData["weatherData"] = _weatherService.GetWeather(location);
             return View();
         }
 
