@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Weather_App.Models;
@@ -18,6 +19,7 @@ namespace Weather_App.Controllers
 
         public IActionResult Index()
         {
+            ViewData["Title"] = "Poèasí";
             return View();
         }
 
@@ -26,9 +28,10 @@ namespace Weather_App.Controllers
             return View();
         }
         [HttpPost]
-        public string Weather(string location)
+        public IActionResult Weather(string location)
         {
-            return _weatherService.GetWeather(location);
+            ViewData["weatherData"] = _weatherService.GetWeather(location);
+            return View();
         }
 
 
@@ -37,5 +40,6 @@ namespace Weather_App.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

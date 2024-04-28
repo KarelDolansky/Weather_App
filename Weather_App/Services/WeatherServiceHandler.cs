@@ -1,12 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Net.NetworkInformation;
-using System.Text.Json;
-using Weather_App.Models;
-using static System.Net.Mime.MediaTypeNames;
-
-
-namespace Weather_App.Services
+﻿namespace Weather_App.Services
 {
     public interface IWeatherServiceHandler
     {

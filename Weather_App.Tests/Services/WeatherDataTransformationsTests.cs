@@ -12,6 +12,8 @@ namespace Weather_App.Tests.Services
             var data = weatherDataTransformations.StringToWeatherData(jsonString);
             Assert.IsType<WeatherData>(data);
             Assert.Equal(10.9, data.hourly.temperature_2m[0]);
+            Assert.Equal(50.760002, data.latitude);
+            Assert.Equal(15.059999, data.longitude);
             Assert.All(data.hourly.temperature_2m, x => Assert.True(x >= 0));
             Assert.All(data.hourly.rain, x => Assert.True(x >= 0));
             Assert.All(data.hourly.precipitation, x => Assert.True(x >= 0));
