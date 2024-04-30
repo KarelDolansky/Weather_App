@@ -16,10 +16,10 @@ namespace Weather_App.Tests
             }));
             var mockWeatherDataTransformations = new Mock<IWeatherDataTransformations>();
 
-            // Mock StringToWeatherData to return a valid WeatherData object
+            // Mock JsonToWeatherData to return a valid WeatherData object
             var mockWeatherData = new Mock<WeatherData>();
 
-            mockWeatherDataTransformations.Setup(x => x.StringToWeatherData(It.IsAny<string>())).Returns(new WeatherData(10,10, hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 }, null, null, null, null, null)));
+            mockWeatherDataTransformations.Setup(x => x.JsonToWeatherData(It.IsAny<string>())).Returns(new WeatherData(10,10, hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 }, null, null, null, null, null)));
 
             var weatherServiceHandler = new WeatherServiceHandler(httpClient, mockWeatherDataTransformations.Object);
             var weatherData = await weatherServiceHandler.CallApi(50.0, 10.0);

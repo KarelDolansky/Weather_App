@@ -22,6 +22,8 @@ builder.Services.AddSingleton<IWeatherDataTransformations, WeatherDataTransforma
 builder.Services.AddSingleton<IWeatherServiceHandler, WeatherServiceHandler>();
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
 
+builder.Services.AddResponseCaching();
+
 builder.Services.AddDistributedMemoryCache();
 
 //builder.Services.AddSession(options =>
@@ -48,6 +50,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseResponseCaching();
 
 app.UseAuthorization();
 
