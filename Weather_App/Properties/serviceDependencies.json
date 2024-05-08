@@ -3,15 +3,6 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection"
-    },
-    "secrets1": {
-      "type": "secrets",
-      "connectionId": "VaultUri"
-    },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "STINConnectionString",
-      "dynamicId": null
     }
   }
 }
