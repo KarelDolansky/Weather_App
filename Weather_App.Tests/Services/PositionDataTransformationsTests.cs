@@ -14,7 +14,7 @@ namespace Weather_App.Tests.Services
             // Arrange
             string jsonString = "{\"results\":[{\"id\":3071961,\"name\":\"Liberec\",\"latitude\":50.76711,\"longitude\":15.05619,\"elevation\":359.0,\"feature_code\":\"PPLA\",\"country_code\":\"CZ\",\"admin1_id\":3339541,\"admin2_id\":3071960,\"admin3_id\":11924204,\"timezone\":\"Europe/Prague\",\"population\":97770,\"country_id\":3077311,\"country\":\"Czechia\",\"admin1\":\"Liberecký kraj\",\"admin2\":\"Liberec District\",\"admin3\":\"Liberec\"}],\"generationtime_ms\":1.0830164}";
             // Act
-            PositionData positionData = positionDataTransformations.StringToPositionData(jsonString);
+            PositionData positionData = positionDataTransformations.JsonToPositionData(jsonString);
 
             // Assert
             Assert.NotNull(positionData);
@@ -32,7 +32,7 @@ namespace Weather_App.Tests.Services
             string jsonString = "";
 
             // Assert
-            Assert.Throws<JsonException>(() => positionDataTransformations.StringToPositionData(jsonString));
+            Assert.Throws<JsonException>(() => positionDataTransformations.JsonToPositionData(jsonString));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Weather_App.Tests.Services
             string jsonString = "[{invalid json}]";
 
             // Assert
-            Assert.Throws<JsonException>(() => positionDataTransformations.StringToPositionData(jsonString));
+            Assert.Throws<JsonException>(() => positionDataTransformations.JsonToPositionData(jsonString));
         }
     }
 }

@@ -30,7 +30,17 @@ namespace Weather_App.Controllers
         [HttpPost]
         public IActionResult Weather(string location)
         {
+            ViewData["Title"] = "Poèasí";
             ViewData["weatherData"] = _weatherService.GetWeather(location);
+            ViewData["location"] = location;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult WeatherMore(string location)
+        {
+            ViewData["Title"] = "Poèasí";
+            ViewData["weatherData"] = _weatherService.GetWeather(location);
+            ViewData["location"] = location;
             return View();
         }
 

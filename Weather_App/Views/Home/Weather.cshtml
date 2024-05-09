@@ -17,5 +17,13 @@
             <p class="value">@weatherData.hourly.precipitation[currentHourIndex] mm</p>
             <!-- Další informace o počasí -->
         }
+        <div class="button-container">
+            <form id="weatherForm" asp-controller="Home" asp-action="WeatherMore" method="post">
+                <button type="submit" class="custom-button">Zobrazit celou předpověď</button>
+                <input type="hidden" name="location" value="@ViewData["location"]" />
+            </form>
+        </div>
     </div>
+    
+
 </div>

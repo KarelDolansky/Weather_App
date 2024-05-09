@@ -25,7 +25,7 @@ namespace Weather_App.Services
             {
                 string jsonString = await response.Content.ReadAsStringAsync();
 
-                return _positionDataTransformations.StringToPositionData(jsonString);
+                return _positionDataTransformations.JsonToPositionData(jsonString);
             }
             else
             {

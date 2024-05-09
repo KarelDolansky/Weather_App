@@ -17,7 +17,7 @@ public class PositionServiceHandlerTests
         }));
 
         var mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
-        mockPositionDataTransformations.Setup(m => m.StringToPositionData(It.IsAny<string>()))
+        mockPositionDataTransformations.Setup(m => m.JsonToPositionData(It.IsAny<string>()))
             .Returns(new PositionData(new List<Results> { new Results("Liberec",10,10) }));
         var positionServiceHandler = new PositionServiceHandler(httpClient, mockPositionDataTransformations.Object);
         var positionData = await positionServiceHandler.CallApi(position);

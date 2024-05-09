@@ -5,6 +5,7 @@ using Weather_App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -22,14 +23,10 @@ builder.Services.AddSingleton<IWeatherDataTransformations, WeatherDataTransforma
 builder.Services.AddSingleton<IWeatherServiceHandler, WeatherServiceHandler>();
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
 
+builder.Services.AddResponseCaching();
+
 builder.Services.AddDistributedMemoryCache();
 
-//builder.Services.AddSession(options =>
-//{
-//    options.IdleTimeout = TimeSpan.FromSeconds(10);
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.IsEssential = true;
-//});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -49,9 +46,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseResponseCaching();
 
-//app.UseSession();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
