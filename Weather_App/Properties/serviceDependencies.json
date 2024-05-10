@@ -2,6 +2,7 @@
   "dependencies": {
     "mssql1": {
       "type": "mssql",
+<<<<<<< Updated upstream
       "connectionId": "ConnectionStrings:try46",
       "dynamicId": null
     },
@@ -14,6 +15,9 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection",
       "dynamicId": null
+=======
+      "connectionId": "ConnectionStrings:try46"
+>>>>>>> Stashed changes
     }
   }
 }
