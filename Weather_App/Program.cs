@@ -7,11 +7,12 @@ using Azure.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 var keyVaultEndpoint = new Uri(builder.Configuration.GetSection("KeyVaultURL").Value!);
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+var azureIdentity = new DefaultAzureCredential();
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, azureIdentity);
 
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("ConnectionStrings--try46") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("try46") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
