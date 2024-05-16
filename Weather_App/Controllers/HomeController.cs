@@ -27,6 +27,7 @@ namespace Weather_App.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public IActionResult Weather(string location)
         {
@@ -35,6 +36,7 @@ namespace Weather_App.Controllers
             ViewData["location"] = location;
             return View();
         }
+
         [HttpPost]
         public IActionResult WeatherMore(string location)
         {
@@ -43,7 +45,6 @@ namespace Weather_App.Controllers
             ViewData["location"] = location;
             return View();
         }
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

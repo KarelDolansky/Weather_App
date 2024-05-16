@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection.Repositories;
-
-namespace Weather_App.Services
+﻿namespace Weather_App.Services
 {
     public interface IPositionServiceHandler
     {
