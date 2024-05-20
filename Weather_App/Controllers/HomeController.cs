@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Weather_App.Models;
 using Weather_App.Services;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Weather_App.Controllers
 {
@@ -36,16 +37,26 @@ namespace Weather_App.Controllers
         }
 
         [HttpGet]
-        public IActionResult Weather(string location, float? latitude, float? longitude)
+        public IActionResult Weather(string location, float? latitude, float? longitude, int days, DateOnly date)
         {
+            if (date.AddMonths(1) < DateOnly.FromDateTime(DateTime.Now) || date > DateOnly.FromDateTime(DateTime.Now).AddMonths(1))
+            {
+                date = DateOnly.FromDateTime(DateTime.Now);
+            }
+
+            if (days < -30 || days > 30)
+            {
+                days = 0;
+            }
+            date = date.AddDays(days);
             ViewData["Title"] = "Poèasí";
-            
+            ViewData["Days"] =  days;
+            ViewData["Date"] = date; 
             location = location.ToLower();
 
-
             var data = latitude.HasValue && longitude.HasValue ?
-                _weatherService.GetWeather(location, latitude.Value, longitude.Value) :
-                _weatherService.GetWeather(location);
+                _weatherService.GetWeather(location, latitude.Value, longitude.Value, date) :
+                _weatherService.GetWeather(location, date);
 
             ViewData["weatherData"] = data;
             ViewData["Icon"] = _ikonWeather.GetIcon(data.daily.weather_code[0]);
@@ -54,11 +65,19 @@ namespace Weather_App.Controllers
             return View();
         }
 
+
         [HttpGet]
-        public IActionResult WeatherMore(string location)
+        public IActionResult WeatherMore(string location, float? latitude, float? longitude, DateOnly date)
         {
+            if (date.AddMonths(1) < DateOnly.FromDateTime(DateTime.Now) || date > DateOnly.FromDateTime(DateTime.Now).AddMonths(1))
+            {
+                date = DateOnly.FromDateTime(DateTime.Now);
+            }
             ViewData["Title"] = "Poèasí";
-            ViewData["weatherData"] = _weatherService.GetWeather(location);
+            var data = latitude.HasValue && longitude.HasValue ?
+                _weatherService.GetWeather(location, latitude.Value, longitude.Value, date) :
+                _weatherService.GetWeather(location, date);
+            ViewData["weatherData"] = data;
             ViewData["location"] = location;
             return View();
         }
