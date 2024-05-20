@@ -1,3 +1,5 @@
+/* Základní styly */
+
 html {
     font-size: 14px;
 }
@@ -19,49 +21,51 @@ html {
 
 body {
     margin-bottom: 60px;
-}
-
-
-body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f0f2f5;
     margin: 0;
     padding: 0;
+    color: #333;
 }
+
+/* Pøedpovìï poèasí */
 
 .weather-container {
     max-width: 600px;
     margin: 50px auto;
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #007bff;
 }
 
 .weather-item {
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 5px;
     padding: 20px;
     margin-bottom: 20px;
+    background-color: #e9f7fd;
 }
 
-.weather-item p {
-    margin: 0;
-}
+    .weather-item p {
+        margin: 0;
+    }
 
-.weather-item p.label {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .weather-item p.label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
 
-.weather-item p.value {
-    font-size: 18px;
-}
+        .weather-item p.value {
+            font-size: 18px;
+            color: #007bff;
+        }
 
 .button-container {
     text-align: center;
@@ -71,25 +75,150 @@ h1 {
 .custom-button {
     padding: 10px 20px;
     background-color: #007bff;
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.custom-button:hover {
-    background-color: #0056b3;
-}
+    .custom-button:hover {
+        background-color: #0056b3;
+    }
+
 .weathermore-container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .weathermore-item {
     margin: 10px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 5px;
     width: 200px;
+    background-color: #e9f7fd;
 }
+
+/* Sidebar */
+
+.wrapper {
+    display: flex;
+}
+
+.content {
+    margin-left: 0;
+    padding: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+    .content.shifted {
+        margin-left: 270px;
+    }
+
+.toggle-sidebar-button {
+    position: fixed;
+    left: 10px;
+    top: 60px;
+    z-index: 1000;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .toggle-sidebar-button:hover {
+        background-color: #0056b3;
+    }
+
+.sidebar {
+    width: 250px;
+    top: 60px;
+    height: calc(100% - 90px);
+    position: fixed;
+    left: -250px;
+    background-color: #007bff;
+    color: white;
+    padding: 50px 20px 20px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+}
+
+    .sidebar.visible {
+        left: 0;
+    }
+
+    .sidebar h2 {
+        color: #ffffff; /* Zmìní barvu nadpisu na bílou */
+        border-bottom: 1px solid #ffffff; /* Pøidáme dolní ohranièení nadpisu */
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-size: 24px; /* Zvìtšíme velikost písma nadpisu */
+        text-transform: uppercase; /* Nastaví text na velká písmena */
+    }
+
+    .sidebar ul li a {
+        color: #ffffff; /* Bílá barva pro text odkazu */
+        text-decoration: none;
+        transition: color 0.3s ease;
+        text-transform: uppercase; /* Nastaví text na velká písmena */
+    }
+
+        .sidebar ul li a:hover {
+            color: #ffdd57; /* Zmìní barvu textu na žlutou pøi najetí myší */
+        }
+
+    .sidebar ul li button {
+        background-color: transparent; /* Prùhledné pozadí pro tlaèítko */
+        border: none;
+        color: #ffffff; /* Bílá barva pro text tlaèítka */
+        cursor: pointer;
+        transition: color 0.3s ease;
+        text-transform: uppercase; /* Nastaví text na velká písmena */
+    }
+
+        .sidebar ul li button:hover {
+            color: #ff6347; /* Zmìní barvu textu na èervenou pøi najetí myší */
+        }
+
+    .sidebar ul li {
+        background-color: #007bff; /* Modré pozadí pro položky v boèním panelu */
+        padding: 10px; /* Pøidáme vnitøní odsazení pro lepší vzhled */
+        border-radius: 5px; /* Zaoblené rohy pro položky v boèním panelu */
+        margin-bottom: 10px; /* Mezera mezi jednotlivými položkami */
+    }
+
+
+
+.favorite-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease; /* Pøidáme pøechod pro animaci */
+}
+
+    .favorite-button:hover {
+        transform: scale(1.2); /* Zvìtšíme tlaèítko pøi najetí myší */
+    }
+
+.favorite-star {
+    font-size: 24px;
+    color: #FFD700; /* Zmìníme barvu hvìzdy na zlatou */
+}
+
+.highlighted-icon {
+    border: 2px solid #FFD700; /* Zlatý okraj */
+    border-radius: 50%; /* Kulatý okraj */
+    padding: 10px; /* Vìtší vnitøní odsazení */
+    background-color: rgba(255, 215, 0, 0.2); /* Svìtle žluté pozadí */
+    transition: transform 0.3s; /* Plynulý pøechod pøi zvìtšení */
+}
+
+    .highlighted-icon:hover {
+        transform: scale(1.1); /* Zvìtšení ikony pøi najetí myší */
+    }
+

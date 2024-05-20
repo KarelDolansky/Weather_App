@@ -11,7 +11,6 @@ var azureIdentity = new DefaultAzureCredential();
 builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, azureIdentity);
 
 var connectionString="";
-// Add services to the container.
 if(builder.Environment.IsDevelopment())
 {
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -26,7 +25,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 
@@ -35,6 +35,8 @@ builder.Services.AddSingleton<IPositionServiceHandler, PositionServiceHandler>()
 builder.Services.AddSingleton<IWeatherDataTransformations, WeatherDataTransformations>();
 builder.Services.AddSingleton<IWeatherServiceHandler, WeatherServiceHandler>();
 builder.Services.AddSingleton<IWeatherService, WeatherService>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+builder.Services.AddSingleton<IIconWeather, IconWeather>();
 
 builder.Services.AddResponseCaching();
 
@@ -62,6 +64,7 @@ app.UseRouting();
 app.UseResponseCaching();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",
