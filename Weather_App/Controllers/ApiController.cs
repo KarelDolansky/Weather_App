@@ -16,7 +16,7 @@ namespace Weather_App.Controllers
             _weatherService = weatherService;
         }
 
-        [HttpGet("{location}")]
+        [HttpGet]
         public string Get(string location)
         {
             return _weatherService.GetJson(location);
