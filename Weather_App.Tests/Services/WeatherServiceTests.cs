@@ -5,6 +5,7 @@ using Weather_App.Services;
 using Xunit;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Razor;
 
 public class WeatherServiceTests
 {
@@ -50,7 +51,34 @@ public class WeatherServiceTests
     }
 
     [Fact]
-    public void GetJson_ThrowsException_WhenPositionDataIsInvalid()
+    public void GetWeather_ThrowsException_WhenWeatherDataIsInvalid()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location,date));
+    }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenWeatherDataIsInvalidV2()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location,latitude,longitude, date));
+    }
+
+    public void GetWeather_ThrowsException_WhenPositionDataIsInvalid()
     {
         // Arrange
         var location = "test_location";
@@ -62,8 +90,27 @@ public class WeatherServiceTests
         _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync((string?)null);
 
         // Act & Assert
-        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, date));
     }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenPositionDataIsInvalidV2()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync((string?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, latitude, longitude, date));
+    }
+
 
 
     [Fact]

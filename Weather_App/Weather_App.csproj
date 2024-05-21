@@ -19,5 +19,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="Weather_App.Tests" />
+	</ItemGroup>
 
 </Project>
