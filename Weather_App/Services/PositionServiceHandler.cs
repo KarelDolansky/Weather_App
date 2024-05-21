@@ -27,8 +27,7 @@
             }
             else
             {
-                // Handle API call errors (e.g., log the error)
-                throw new Exception($"API call failed with status code {response.StatusCode}");
+                throw new ExceptionApiCall("Api call failed " + response.StatusCode);
             }
         }
     }
