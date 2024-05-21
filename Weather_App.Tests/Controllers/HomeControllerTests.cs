@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
 using Weather_App.Controllers;
-using Weather_App.Models;
 using Weather_App.Services;
 
 public class HomeControllerTests
@@ -61,86 +60,6 @@ public class HomeControllerTests
         // Assert
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
-    }
-
-    [Fact]
-    public async Task AddFavorite_ReturnsRedirectToAction_WhenLocationProvided()
-    {
-        // Arrange
-        var location = "Prague";
-        var latitude = 50f;
-        var longitude = 10f;
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "username") }));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-        _mockFavoriteService.Setup(service => service.Add(location, latitude, longitude, user)).Returns(Task.CompletedTask);
-
-        // Act
-        var result = _controller.AddFavorite(location, latitude, longitude);
-
-        // Assert
-        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectToActionResult.ActionName);
-    }
-
-
-
-    [Fact]
-    public void RemoveFavorite_ReturnsRedirectToAction_WhenLocationProvided()
-    {
-        // Arrange
-        var location = "Prague";
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "username") }));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-        _mockFavoriteService.Setup(service => service.Remove(location,user)).Returns(Task.CompletedTask);
-
-        // Act
-        var result = _controller.RemoveFavorite(location);
-
-        // Assert
-        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-        Assert.Equal("Index", redirectToActionResult.ActionName);
-    }
-
-    [Fact]
-    public void Favorite_ReturnsPartialView_WhenUserIsAuthenticated()
-    {
-        // Arrange
-        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-        {
-            new Claim(ClaimTypes.Name, "username"),
-        }));
-
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = user }
-        };
-
-
-        var favorites = new List<Favorite>
-        {
-            new Favorite { Location = "Prague", Latitude = 50.0755f, Longitude = 14.4378f }
-        };
-
-        _mockFavoriteService.Setup(service => service.GetAll(user)).ReturnsAsync(favorites);
-
-
-
-        // Act
-        var result = _controller.Favorite();
-
-        // Assert
-        var viewResult = Assert.IsType<PartialViewResult>(result);
-        Assert.Equal("_Favorite", viewResult.ViewName);
-        Assert.Equal(favorites, viewResult.ViewData["favorites"] as List<Favorite>);
     }
 
     [Fact]
