@@ -5,6 +5,7 @@ on:
     branches: 
       - 'feature/**'
       - 'master'
+      - 'development'
   pull_request:
 
 jobs:
