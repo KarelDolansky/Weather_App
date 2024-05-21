@@ -45,7 +45,7 @@ public class FavoriteServiceTests
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.NameIdentifier, "test_user_id") }));
 
         // Act
-        await _favoriteService.AddFavorite(location, latitude, longitude, user);
+        await _favoriteService.Add(location, latitude, longitude, user);
 
         // Assert
         Assert.Single(_context.Favorites);
@@ -65,10 +65,10 @@ public class FavoriteServiceTests
         var longitude = 15.059999f;
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.NameIdentifier, "test_user_id") }));
 
-        await _favoriteService.AddFavorite(location, latitude, longitude, user);
+        await _favoriteService.Add(location, latitude, longitude, user);
 
         // Act
-        await _favoriteService.RemoveFavorite(location, user);
+        await _favoriteService.Remove(location, user);
 
         // Assert
         Assert.Empty(_context.Favorites);
@@ -86,11 +86,11 @@ public class FavoriteServiceTests
         var longitude2 = 16.059999f;
         var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.NameIdentifier, "test_user_id") }));
 
-        await _favoriteService.AddFavorite(location1, latitude1, longitude1, user);
-        await _favoriteService.AddFavorite(location2, latitude2, longitude2, user);
+        await _favoriteService.Add(location1, latitude1, longitude1, user);
+        await _favoriteService.Add(location2, latitude2, longitude2, user);
 
         // Act
-        var favorites = await _favoriteService.GetFavorites(user);
+        var favorites = await _favoriteService.GetAll(user);
 
         // Assert
         Assert.Equal(2, favorites.Count);

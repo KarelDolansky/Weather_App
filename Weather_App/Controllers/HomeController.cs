@@ -130,7 +130,7 @@ namespace Weather_App.Controllers
             {
                 return Unauthorized();
             }
-            var favorites = _favoriteService.GetFavorites(User).Result;
+            var favorites = _favoriteService.GetAll(User).Result;
 
             return PartialView("_Favorite", favorites);
         }
@@ -142,7 +142,7 @@ namespace Weather_App.Controllers
             {
                 return Unauthorized();
             }
-            _favoriteService.AddFavorite(location, latitude, longitude, User).Wait();
+            _favoriteService.Add(location, latitude, longitude, User).Wait();
             return RedirectToAction("Index", "Home");
         }
         [HttpGet]
@@ -152,7 +152,7 @@ namespace Weather_App.Controllers
             {
                 return Unauthorized();
             }
-            _favoriteService.RemoveFavorite(location, User).Wait();
+            _favoriteService.Remove(location, User).Wait();
             return RedirectToAction("Index", "Home");
         }
 
