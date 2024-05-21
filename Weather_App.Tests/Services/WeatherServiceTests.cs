@@ -1,74 +1,142 @@
-﻿//using Moq;
-//using Microsoft.Extensions.Caching.Memory;
-//using Weather_App.Services;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using Moq;
+using Weather_App.Services;
+using Xunit;
+using System;
+using System.Collections.Generic;
 
-//namespace Weather_App.Tests
-//{
-//    public class WeatherServiceTests
-//    {
-//        [Fact]
-//        public void GetWeather_Returns_Cached_Data_If_Available()
-//        {
-//            // Arrange
-//            var cacheMock = new Mock<IMemoryCache>();
-//            var cachedWeatherData = new WeatherData(10, 10, hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 }, null, null, null, null, null));
-//            cacheMock.Setup(cache => cache.Get<WeatherData>(It.IsAny<string>())).Returns(cachedWeatherData);
+public class WeatherServiceTests
+{
+    private readonly Mock<IWeatherServiceHandler> _weatherServiceHandlerMock;
+    private readonly Mock<IPositionServiceHandler> _positionServiceHandlerMock;
+    private readonly Mock<IWeatherDataTransformations> _weatherDataTransformationsMock;
+    private readonly IMemoryCache _cache;
+    private readonly WeatherService _weatherService;
 
-//            var weatherServiceHandlerMock = new Mock<IWeatherServiceHandler>();
-//            var positionServiceHandlerMock = new Mock<IPositionServiceHandler>();
-//            var weatherDataTransformationsMock = new Mock<IWeatherDataTransformations>();
+    public WeatherServiceTests()
+    {
+        _weatherServiceHandlerMock = new Mock<IWeatherServiceHandler>();
+        _positionServiceHandlerMock = new Mock<IPositionServiceHandler>();
+        _weatherDataTransformationsMock = new Mock<IWeatherDataTransformations>();
+        _cache = new FakeMemoryCache();
+        _weatherService = new WeatherService(_weatherServiceHandlerMock.Object, _positionServiceHandlerMock.Object, _weatherDataTransformationsMock.Object, _cache);
+    }
 
-//            var service = new WeatherService(
-//                weatherServiceHandlerMock.Object,
-//                positionServiceHandlerMock.Object,
-//                weatherDataTransformationsMock.Object,
-//                cacheMock.Object
-//            );
+    [Fact]
+    public void GetWeather_WithCoordinates_ReturnsWeatherData_WhenLocationIsFound()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+        var weatherData = new WeatherData(50.760002, 15.059999, new Hourly(new List<string>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>()), new Daily(new List<int>()));
 
-//            // Act
-//            var result = service.GetWeather("test_location");
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(latitude, longitude, date)).ReturnsAsync(weatherJson);
+        _weatherDataTransformationsMock.Setup(w => w.JsonToWeatherData(weatherJson)).Returns(weatherData);
 
-//            // Assert
-//            Assert.Equal(cachedWeatherData, result);
-//            cacheMock.Verify(cache => cache.Get<WeatherData>("test_location"), Times.Once);
-//        }
+        // Act
+        var result = _weatherService.GetWeather(location, latitude, longitude, date);
 
-//        [Fact]
-//        public void GetWeather_Calls_Api_When_Data_Not_Cached()
-//        {
-//            // Arrange
-//            var cacheMock = new Mock<IMemoryCache>();
-//            cacheMock.Setup(cache => cache.Get<WeatherData>(It.IsAny<string>())).Returns((string key) => null);
+        // Assert
+        Assert.Equal(weatherData, result);
+    }
 
-//            var positionData = new PositionData(new List<Results> { new Results("Liberec", 10, 10) });
-//            var weatherJson = "test_weather_json";
-//            var weatherData = new WeatherData(10, 10, hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 }, null, null, null, null, null));
+    [Fact]
+    public void GetJson_ReturnsJson_WhenLocationIsFound()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
 
-//            var weatherServiceHandlerMock = new Mock<IWeatherServiceHandler>();
-//            weatherServiceHandlerMock.Setup(handler => handler.CallApi(It.IsAny<double>(), It.IsAny<double>())).ReturnsAsync(weatherJson);
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync(weatherJson);
 
-//            var positionServiceHandlerMock = new Mock<IPositionServiceHandler>();
-//            positionServiceHandlerMock.Setup(handler => handler.CallApi(It.IsAny<string>())).ReturnsAsync(positionData);
+        // Act
+        var result = _weatherService.GetJson(location);
 
-//            var weatherDataTransformationsMock = new Mock<IWeatherDataTransformations>();
-//            weatherDataTransformationsMock.Setup(transformations => transformations.JsonToWeatherData(It.IsAny<string>())).Returns(weatherData);
+        // Assert
+        Assert.Equal(weatherJson, result);
+    }
 
-//            var service = new WeatherService(
-//                weatherServiceHandlerMock.Object,
-//                positionServiceHandlerMock.Object,
-//                weatherDataTransformationsMock.Object,
-//                cacheMock.Object
-//            );
+    [Fact]
+    public void GetJson_ThrowsException_WhenLocationIsNotFound()
+    {
+        // Arrange
+        var location = "test_location";
 
-//            // Act
-//            var result = service.GetWeather("test_location");
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
 
-//            // Assert
-//            Assert.Equal(weatherData, result);
-//            cacheMock.Verify(cache => cache.Set("test_location", weatherData, It.IsAny<TimeSpan>()), Times.Once);
-//            weatherServiceHandlerMock.Verify(handler => handler.CallApi(It.IsAny<double>(), It.IsAny<double>()), Times.Once);
-//            positionServiceHandlerMock.Verify(handler => handler.CallApi(It.IsAny<string>()), Times.Once);
-//            weatherDataTransformationsMock.Verify(transformations => transformations.JsonToWeatherData(weatherJson), Times.Once);
-//        }
-//    }
-//}
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
+    }
+
+    [Fact]
+    public void GetJson_ThrowsException_WhenWeatherDataIsNotFound()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync((string?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
+    }
+}
+
+public class FakeMemoryCache : IMemoryCache
+{
+    private readonly Dictionary<object, object?> _cache = new Dictionary<object, object?>();
+
+    public ICacheEntry CreateEntry(object key)
+    {
+        return new FakeCacheEntry(key, _cache);
+    }
+
+    public void Dispose()
+    {
+    }
+
+    public void Remove(object key)
+    {
+        _cache.Remove(key);
+    }
+
+    public bool TryGetValue(object key, out object? value)
+    {
+        return _cache.TryGetValue(key, out value);
+    }
+}
+
+public class FakeCacheEntry : ICacheEntry
+{
+    private readonly object _key;
+    private readonly Dictionary<object, object?> _cache;
+
+    public FakeCacheEntry(object key, Dictionary<object, object?> cache)
+    {
+        _key = key;
+        _cache = cache;
+    }
+
+    public object Key => _key;
+    public object? Value { get => _cache[_key]; set => _cache[_key] = value; }
+    public DateTimeOffset? AbsoluteExpiration { get; set; }
+    public TimeSpan? AbsoluteExpirationRelativeToNow { get; set; }
+    public TimeSpan? SlidingExpiration { get; set; }
+    public IList<IChangeToken> ExpirationTokens { get; } = new List<IChangeToken>();
+    public IList<PostEvictionCallbackRegistration> PostEvictionCallbacks { get; } = new List<PostEvictionCallbackRegistration>();
+    public CacheItemPriority Priority { get; set; }
+    public long? Size { get; set; }
+
+    public void Dispose()
+    {
+    }
+}

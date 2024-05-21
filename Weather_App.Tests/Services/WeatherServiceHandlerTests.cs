@@ -1,57 +1,54 @@
-﻿//using Moq;
-//using System.Net;
-//using Weather_App.Services;
+﻿using Moq.Protected;
+using Moq;
+using System.Net;
+using System.Text;
+using Weather_App.Services;
 
-//namespace Weather_App.Tests
-//{
-//    public class WeatherServiceHandlerTests
-//    {
-//        [Fact]
-//        public async Task CallApi_Returns_WeatherData_On_Successful_Api_Call()
-//        {
-//            var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
-//            {
-//                StatusCode = HttpStatusCode.OK,
-//                Content = new StringContent("{\"hourly\": { \"temperature_2m\": [10.9]}}")
-//            }));
-//            var mockWeatherDataTransformations = new Mock<IWeatherDataTransformations>();
+public class WeatherServiceHandlerTests
+{
+    private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
+    private readonly HttpClient _httpClient;
+    private readonly WeatherServiceHandler _weatherServiceHandler;
 
-//            // Mock JsonToWeatherData to return a valid WeatherData object
-//            var mockWeatherData = new Mock<WeatherData>();
+    public WeatherServiceHandlerTests()
+    {
+        _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+        _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
+        _weatherServiceHandler = new WeatherServiceHandler(_httpClient);
+    }
 
-//            mockWeatherDataTransformations.Setup(x => x.JsonToWeatherData(It.IsAny<string>())).Returns(new WeatherData(10,10, hourly: new Hourly(null, temperature_2m: new List<double> { 10.9 }, null, null, null, null, null)));
+    [Fact]
+    public async Task CallApi_ReturnsJsonString_WhenResponseIsSuccess()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("{\"latitude\":50.760002,\"longitude\":15.059999}", Encoding.UTF8, "application/json")
+        };
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(fakeResponse);
 
-//            var weatherServiceHandler = new WeatherServiceHandler(httpClient, mockWeatherDataTransformations.Object);
-//            var weatherData = await weatherServiceHandler.CallApi(50.0, 10.0);
-//            Assert.NotNull(weatherData);
-//        }
+        // Act
+        var result = await _weatherServiceHandler.CallApi(50.760002, 15.059999, DateOnly.FromDateTime(DateTime.Now));
 
+        // Assert
+        Assert.Equal("{\"latitude\":50.760002,\"longitude\":15.059999}", result);
+    }
 
-//        [Fact]
-//        public async Task CallApi_Throws_Exception_On_Unsuccessful_Api_Call()
-//        {
-//            var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
-//            {
-//                StatusCode = HttpStatusCode.NotFound
-//            }));
-//            var mockWeatherDataTransformations = new Mock<IWeatherDataTransformations>();
-//            var weatherServiceHandler = new WeatherServiceHandler(httpClient, mockWeatherDataTransformations.Object);
-//            await Assert.ThrowsAsync<Exception>(() => weatherServiceHandler.CallApi(50.0, 10.0));
-//        }
-//    }
+    [Fact]
+    public async Task CallApi_ThrowsExceptionApiCall_WhenResponseIsNotSuccess()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(fakeResponse);
 
-//    public class FakeHttpMessageHandler : HttpMessageHandler
-//    {
-//        private readonly HttpResponseMessage _response;
+        // Act & Assert
+        await Assert.ThrowsAsync<ExceptionApiCall>(() => _weatherServiceHandler.CallApi(50.760002, 15.059999, DateOnly.FromDateTime(DateTime.Now)));
+    }
+}
 
-//        public FakeHttpMessageHandler(HttpResponseMessage response)
-//        {
-//            _response = response;
-//        }
-
-//        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-//        {
-//            return Task.FromResult(_response);
-//        }
-//    }
-//}

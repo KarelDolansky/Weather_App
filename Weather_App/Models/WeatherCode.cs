@@ -1,10 +1,10 @@
 ﻿namespace Weather_App.Models
 {
     public record WeatherCode(
-        List<Weather_conditions> weather_conditions
+        List<WeatherConditions> weather_conditions
         );
 
-    public record Weather_conditions(
+    public record WeatherConditions(
         int code,
         string description,
         string image

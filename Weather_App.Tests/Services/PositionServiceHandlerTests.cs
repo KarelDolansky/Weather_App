@@ -1,57 +1,57 @@
-﻿using Moq;
+﻿using Moq.Protected;
+using Moq;
 using System.Net;
-using System.Net.Http;
+using System.Text;
 using Weather_App.Services;
 
 public class PositionServiceHandlerTests
 {
-    [Fact]
-    public async Task CallApi_ValidPosition_ReturnsPositionData()
-    {
-        // Arrange
-        string position = "Prague, Czech Republic";
-        var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = new StringContent("{\"results\":[{\"id\":3071961,\"name\":\"Liberec\",\"latitude\":50.76711,\"longitude\":15.05619,\"elevation\":359,\"feature_code\":\"PPLA\",\"country_code\":\"CZ\",\"admin1_id\":3339541,\"admin2_id\":3071960,\"admin3_id\":11924204,\"timezone\":\"Europe/Prague\",\"population\":97770,\"country_id\":3077311,\"country\":\"Czechia\",\"admin1\":\"Liberecký kraj\",\"admin2\":\"Liberec District\",\"admin3\":\"Liberec\"}],\"generationtime_ms\":1.0370016}")
-        }));
+    private readonly Mock<HttpMessageHandler> _mockHttpMessageHandler;
+    private readonly HttpClient _httpClient;
+    private readonly Mock<IPositionDataTransformations> _mockPositionDataTransformations;
+    private readonly PositionServiceHandler _positionServiceHandler;
 
-        var mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
-        mockPositionDataTransformations.Setup(m => m.JsonToPositionData(It.IsAny<string>()))
-            .Returns(new PositionData(new List<Results> { new Results("Liberec",10,10) }));
-        var positionServiceHandler = new PositionServiceHandler(httpClient, mockPositionDataTransformations.Object);
-        var positionData = await positionServiceHandler.CallApi(position);
-        Assert.NotNull(positionData);
+    public PositionServiceHandlerTests()
+    {
+        _mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+        _httpClient = new HttpClient(_mockHttpMessageHandler.Object);
+        _mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
+        _positionServiceHandler = new PositionServiceHandler(_httpClient, _mockPositionDataTransformations.Object);
     }
 
     [Fact]
-    public async Task CallApi_ApiCallFails_ThrowsException()
+    public async Task CallApi_ReturnsPositionData_WhenResponseIsSuccess()
     {
         // Arrange
-        string position = "Prague, Czech Republic";
-        var httpClient = new HttpClient(new FakeHttpMessageHandler(new HttpResponseMessage
+        var fakeResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
-            StatusCode = HttpStatusCode.NotFound
-        }));
+            Content = new StringContent("{\"results\":[{\"name\":\"Test\",\"latitude\":50.0,\"longitude\":14.0}]}", Encoding.UTF8, "application/json")
+        };
+        var fakePositionData = new PositionData(new List<Results> { new Results("Test", 50.0, 14.0) });
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(fakeResponse);
+        _mockPositionDataTransformations.Setup(p => p.JsonToPositionData(It.IsAny<string>())).Returns(fakePositionData);
 
-        var mockPositionDataTransformations = new Mock<IPositionDataTransformations>();
+        // Act
+        var result = await _positionServiceHandler.CallApi("Test");
 
-        var positionServiceHandler = new PositionServiceHandler(httpClient, mockPositionDataTransformations.Object);
-        await Assert.ThrowsAsync<Exception>(() => positionServiceHandler.CallApi(position));
+        // Assert
+        Assert.Equal(fakePositionData, result);
     }
 
-    public class FakeHttpMessageHandler : HttpMessageHandler
+    [Fact]
+    public async Task CallApi_ThrowsExceptionApiCall_WhenResponseIsNotSuccess()
     {
-        private readonly HttpResponseMessage _response;
+        // Arrange
+        var fakeResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        _mockHttpMessageHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(fakeResponse);
 
-        public FakeHttpMessageHandler(HttpResponseMessage response)
-        {
-            _response = response;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(_response);
-        }
+        // Act & Assert
+        await Assert.ThrowsAsync<ExceptionApiCall>(() => _positionServiceHandler.CallApi("Test"));
     }
 }

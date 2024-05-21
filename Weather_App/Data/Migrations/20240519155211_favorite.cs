@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
 
 namespace Weather_App.Data.Migrations
 {
-    /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public partial class favorite : Migration
     {
         /// <inheritdoc />
