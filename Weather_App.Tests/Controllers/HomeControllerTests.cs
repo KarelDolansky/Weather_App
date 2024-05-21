@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
 using Weather_App.Controllers;
+using Weather_App.Models;
 using Weather_App.Services;
 
 public class HomeControllerTests
