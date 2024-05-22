@@ -6,6 +6,9 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.FileProviders;
+using System.Text;
+using Weather_App.Models;
 
 public class WeatherServiceTests
 {
@@ -223,6 +226,26 @@ public class WeatherServiceTests
         // Act & Assert
         Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
     }
+    [Fact]
+    public void WeatherCode_ShouldCreateInstance_AndAccessProperties()
+    {
+        // Arrange
+        var weatherConditions = new List<WeatherConditions>
+    {
+        new WeatherConditions(100, "Clear sky", "sunny.png")
+    };
+
+        // Act
+        var weatherCode = new WeatherCode(weatherConditions);
+
+        // Assert
+        Assert.Equal(weatherConditions, weatherCode.weather_conditions);
+        Assert.Equal(100, weatherCode.weather_conditions[0].code);
+        Assert.Equal("Clear sky", weatherCode.weather_conditions[0].description);
+        Assert.Equal("sunny.png", weatherCode.weather_conditions[0].image);
+    }
+
+
 }
 
 public class FakeMemoryCache : IMemoryCache
