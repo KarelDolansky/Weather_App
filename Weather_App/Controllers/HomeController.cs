@@ -58,11 +58,6 @@ namespace Weather_App.Controllers
                 var data = latitude.HasValue && longitude.HasValue ?
                 _weatherService.GetWeather(location, latitude.Value, longitude.Value, date) :
                 _weatherService.GetWeather(location, date);
-                if(data==null)
-                {
-                    TempData["ErrorMessage"] = "Špatnì zadané místo";
-                    return RedirectToAction("Error");
-                }
                 ViewData["weatherData"] = data;
                 ViewData["Icon"] = _ikonWeather.GetIcon(data.daily.weather_code[0]);
             }

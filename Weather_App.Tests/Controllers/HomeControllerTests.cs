@@ -354,4 +354,97 @@ public class HomeControllerTests
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.Equal(weatherData, viewResult.ViewData["weatherData"]);
     }
+    [Fact]
+    public void Weather_WeatherServiceThrowsExceptionBadRequest_ReturnsRedirectToError()
+    {
+        // Arrange
+        _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _weatherServiceMock.Setup(service => service.GetWeather(It.IsAny<string>(), date))
+            .Throws(new ExceptionBadRequest());
+
+        // Act
+        var result = _controller.Weather("Prague", null, null, 0, date);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Error", redirectResult.ActionName);
+        Assert.Equal("Špatnì zadané místo", _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public void Weather_WeatherServiceThrowsExceptionApiCall_ReturnsRedirectToError()
+    {
+        // Arrange
+        _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _weatherServiceMock.Setup(service => service.GetWeather(It.IsAny<string>(), date))
+            .Throws(new ExceptionApiCall());
+
+        // Act
+        var result = _controller.Weather("Prague", null, null, 0, date);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Error", redirectResult.ActionName);
+        Assert.Equal("Chyba pøi získávání dat o poèasí. Zkuste to prosím znovu.", _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public void Weather_WeatherServiceThrowsGenericException_ReturnsRedirectToError()
+    {
+        // Arrange
+        _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _weatherServiceMock.Setup(service => service.GetWeather(It.IsAny<string>(), date))
+            .Throws(new Exception());
+
+        // Act
+        var result = _controller.Weather("Prague", null, null, 0, date);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Error", redirectResult.ActionName);
+        Assert.Equal("Nastala neoèekávána chyba. Zkuste to prosím znovu.", _controller.TempData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public void WeatherMore_ValidDate_ReturnsViewResult()
+    {
+        // Arrange
+        var validDate = DateOnly.FromDateTime(DateTime.Now);
+        var location = "Prague";
+        var weatherData = new WeatherData(
+             latitude: 10,
+             longitude: 10,
+             hourly: new Hourly(
+                 time: new List<string> { "10:00" },
+                 temperature_2m: new List<double> { 15.5 },
+                 precipitation: new List<double> { 0.0 },
+                 rain: new List<double> { 0.0 },
+                 showers: new List<double> { 0.0 },
+                 snowfall: new List<double> { 0.0 },
+                 snow_depth: new List<double> { 0.0 }
+             ),
+             daily: new Daily(
+                 weather_code: new List<int> { 100 }
+             )
+         );
+        _controller.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+
+        _weatherServiceMock.Setup(service => service.GetWeather(location, validDate))
+            .Returns(weatherData);
+
+        // Act
+        var result = _controller.WeatherMore(location, null, null, validDate);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(weatherData, viewResult.ViewData["weatherData"]);
+        Assert.Equal(location, viewResult.ViewData["location"]);
+    }
+
 }
