@@ -11,7 +11,6 @@ using Weather_App.Data;
 
 namespace Weather_App.Data.Migrations
 {
-    [ExcludeFromCodeCoverage]
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {

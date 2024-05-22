@@ -5,6 +5,10 @@ using Weather_App.Services;
 using Xunit;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.FileProviders;
+using System.Text;
+using Weather_App.Models;
 
 public class WeatherServiceTests
 {
@@ -22,6 +26,95 @@ public class WeatherServiceTests
         _cache = new FakeMemoryCache();
         _weatherService = new WeatherService(_weatherServiceHandlerMock.Object, _positionServiceHandlerMock.Object, _weatherDataTransformationsMock.Object, _cache);
     }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenLocationIsNotFound()
+    {
+        // Arrange
+        string location = null;
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, latitude, longitude, date));
+    }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenLocationIsNotFoundV2()
+    {
+        // Arrange
+        string location = null;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, date));
+    }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenWeatherDataIsInvalid()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location,date));
+    }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenWeatherDataIsInvalidV2()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location,latitude,longitude, date));
+    }
+
+    public void GetWeather_ThrowsException_WhenPositionDataIsInvalid()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync((string?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, date));
+    }
+
+    [Fact]
+    public void GetWeather_ThrowsException_WhenPositionDataIsInvalidV2()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync((string?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetWeather(location, latitude, longitude, date));
+    }
+
+
 
     [Fact]
     public void GetWeather_WithCoordinates_ReturnsWeatherData_WhenLocationIsFound()
@@ -45,6 +138,26 @@ public class WeatherServiceTests
     }
 
     [Fact]
+    public void GetWeather_ReturnsWeatherData_WhenLocationIsFound()
+    {
+        // Arrange
+        var location = "test_location";
+        var latitude = 50.760002f;
+        var longitude = 15.059999f;
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+        var weatherData = new WeatherData(50.760002, 15.059999, new Hourly(new List<string>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>()), new Daily(new List<int>()));
+
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(latitude, longitude, date)).ReturnsAsync(weatherJson);
+        _weatherDataTransformationsMock.Setup(w => w.JsonToWeatherData(weatherJson)).Returns(weatherData);
+
+        // Act
+        var result = _weatherService.GetWeather(location, latitude, longitude, date);
+
+        // Assert
+        Assert.Equal(weatherData, result);
+    }
+    [Fact]
     public void GetJson_ReturnsJson_WhenLocationIsFound()
     {
         // Arrange
@@ -56,11 +169,26 @@ public class WeatherServiceTests
         _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
         _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync(weatherJson);
 
-        // Act
         var result = _weatherService.GetJson(location);
-
-        // Assert
         Assert.Equal(weatherJson, result);
+    }
+
+    [Fact]
+    public void GetWeather_ReturnsWeather_WhenLocationIsFound()
+    {
+        // Arrange
+        var location = "test_location";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var positionData = new PositionData(new List<Results> { new Results("test_location", 50.760002, 15.059999) });
+        var weatherJson = "{\"latitude\":50.760002,\"longitude\":15.059999,\"hourly\":{},\"daily\":{}}";
+        var weather = new WeatherData(50.760002, 15.059999, new Hourly(new List<string>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>(), new List<double>()), new Daily(new List<int>()));
+
+        _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync(positionData);
+        _weatherServiceHandlerMock.Setup(w => w.CallApi(positionData.results[0].latitude, positionData.results[0].longitude, date)).ReturnsAsync(weatherJson);
+        _weatherDataTransformationsMock.Setup(w => w.JsonToWeatherData(weatherJson)).Returns(weather);
+
+        var result = _weatherService.GetWeather(location, date);
+        Assert.Equal(weather, result);
     }
 
     [Fact]
@@ -70,6 +198,15 @@ public class WeatherServiceTests
         var location = "test_location";
 
         _positionServiceHandlerMock.Setup(p => p.CallApi(location)).ReturnsAsync((PositionData?)null);
+
+        // Act & Assert
+        Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
+    }
+    [Fact]
+    public void GetJson_ThrowsException_WhenLocationIsNotFoundV2()
+    {
+        // Arrange
+        string location = null;
 
         // Act & Assert
         Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
@@ -89,6 +226,26 @@ public class WeatherServiceTests
         // Act & Assert
         Assert.Throws<ExceptionBadRequest>(() => _weatherService.GetJson(location));
     }
+    [Fact]
+    public void WeatherCode_ShouldCreateInstance_AndAccessProperties()
+    {
+        // Arrange
+        var weatherConditions = new List<WeatherConditions>
+    {
+        new WeatherConditions(100, "Clear sky", "sunny.png")
+    };
+
+        // Act
+        var weatherCode = new WeatherCode(weatherConditions);
+
+        // Assert
+        Assert.Equal(weatherConditions, weatherCode.weather_conditions);
+        Assert.Equal(100, weatherCode.weather_conditions[0].code);
+        Assert.Equal("Clear sky", weatherCode.weather_conditions[0].description);
+        Assert.Equal("sunny.png", weatherCode.weather_conditions[0].image);
+    }
+
+
 }
 
 public class FakeMemoryCache : IMemoryCache
