@@ -28,9 +28,6 @@
 		<ExcludeFromCodeCoverage>*/Areas/*</ExcludeFromCodeCoverage>
 		<ExcludeFromCodeCoverage>*/Data/*</ExcludeFromCodeCoverage>
 		<ExcludeFromCodeCoverage>Program.cs</ExcludeFromCodeCoverage>
-
-
-
 		<CollectCoverage>true</CollectCoverage>
 		<CoverletOutputFormat>cobertura</CoverletOutputFormat>
 	</PropertyGroup>

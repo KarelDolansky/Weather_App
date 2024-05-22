@@ -25,7 +25,7 @@ public class HomeControllerTests
     }
 
     [Fact]
-    public void Index_ReturnsViewResult()
+    public void Index_ShouldReturnViewResult()
     {
         // Act
         var result = _controller.Index();
@@ -35,7 +35,7 @@ public class HomeControllerTests
     }
 
     [Fact]
-    public void Privacy_ReturnsViewResult()
+    public void Privacy_ShouldReturnViewResult()
     {
         // Act
         var result = _controller.Privacy();
@@ -47,7 +47,7 @@ public class HomeControllerTests
     // Your existing Weather method tests go here
 
     [Fact]
-    public void WeatherMore_ReturnsViewResult_WhenLocationProvided()
+    public void WeatherMore_ShouldReturnViewResult_WhenLocationProvided()
     {
         // Arrange
         var location = "Prague";
@@ -62,9 +62,56 @@ public class HomeControllerTests
         var viewResult = Assert.IsType<ViewResult>(result);
         Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
     }
+    [Fact]
+    public void Weather_ShouldReturnViewResult_WhenLocationProavided()
+    {
+        // Arrange
+        var location = "Prague";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var expectedWeatherData = new WeatherData(10, 10, new Hourly(new List<string> { "10.9" }, null, null, null, null, null, null), new Daily(null));
+        _mockWeatherService.Setup(service => service.GetWeather(location, date)).Returns(expectedWeatherData);
+
+        // Act
+        var result = _controller.Weather(location, null, null, 0, date);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
+    }
 
     [Fact]
-    public void Favorite_ReturnsUnauthorized_WhenUserIsNotAuthenticated()
+    public void Weather_ShouldReturnViewResult_WhenLocationNotFound()
+    {
+        // Arrange
+        var date = DateOnly.FromDateTime(DateTime.Now);
+
+        // Act
+        var result = _controller.Weather(null, null, null, 0, date);
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Špatnì zadané místo", viewResult.ViewData["ErrorMessage"]);
+    }
+
+    [Fact]
+    public void Weather_ShouldReturnViewResult_WhenDateWrong()
+    {
+        // Arrange
+        var location = "Prague";
+        var date = DateOnly.FromDateTime(DateTime.Now);
+        var expectedWeatherData = new WeatherData(10, 10, new Hourly(new List<string> { "10.9" }, null, null, null, null, null, null), new Daily(null));
+        _mockWeatherService.Setup(service => service.GetWeather(location, date)).Returns(expectedWeatherData);
+
+        // Act
+        var result = _controller.Weather(location, null, null, -5, date.AddYears(1));
+
+        // Assert
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
+    }
+
+    [Fact]
+    public void Favorite_ShouldReturnUnauthorized_WhenUserIsNotAuthenticated()
     {
         // Arrange
         var user = new ClaimsPrincipal(new ClaimsIdentity());
