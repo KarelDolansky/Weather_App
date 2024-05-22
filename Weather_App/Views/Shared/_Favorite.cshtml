@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Favorite>
+
+<div id="sidebar" class="sidebar">
+    <h2>Oblíbené položky</h2>
+    <ul>
+        @if(Model!=null)
+        {
+            @foreach (var favorite in Model)
+            {
+                <li>
+                    <a asp-controller="Home" asp-action="Weather" asp-route-location="@favorite.Location"
+                    asp-route-latitude="@favorite.Latitude"
+                    asp-route-longitude="@favorite.Longitude"
+                    >@favorite.Location</a>
+                    <form method="get" asp-action="RemoveFavorite">
+                        <button type="submit" name="location" value="@favorite.Location">X</button>
+                    </form>
+                </li>
+            }
+        }
+    </ul>
+</div>

@@ -3,6 +3,12 @@
 }
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
+@if (User.Identity.IsAuthenticated)
+{
+    <button id="toggleSidebar" class="toggle-sidebar-button">☰ Menu</button>
+    <div id="favorite">
+    </div>
+}
 <h1>Předpověď počasí</h1>
 <div class="weathermore-container">
     @if (@weatherData != null)

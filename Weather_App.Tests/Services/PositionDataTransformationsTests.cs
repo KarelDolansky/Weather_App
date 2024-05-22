@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Weather_App.Services;
 
 namespace Weather_App.Tests.Services

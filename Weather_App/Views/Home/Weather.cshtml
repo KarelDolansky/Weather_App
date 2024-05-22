@@ -1,29 +1,69 @@
 ﻿@{
     var currentHourIndex = DateTime.Now.Hour;
     var weatherData = ViewData["weatherData"] as WeatherData;
+    var selectedDays = (int)ViewData["Days"];
 }
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@if (User.Identity.IsAuthenticated)
+{
+    <button id="toggleSidebar" class="toggle-sidebar-button">☰ Menu</button>
+    <div id="favorite">
+    </div>
+    <div class="date-picker">
+        <form id="addFavoriteForm" asp-controller="Home" asp-action="Weather" method="get">
+            <input type="hidden" name="location" value="@ViewData["location"]" />
+            <input type="hidden" name="latitude" value="@weatherData.latitude" />
+            <input type="hidden" name="longitude" value="@weatherData.longitude" />
+            <input type="hidden" name="days" value="-1" />
+            <input type="hidden" name="date" value="@ViewData["date"]" />
+            <button type="submit" class="favorite-button">Den zpět</button>
+        </form>
+        <form id="addFavoriteForm" asp-controller="Home" asp-action="Weather" method="get">
+            <input type="hidden" name="location" value="@ViewData["location"]" />
+            <input type="hidden" name="latitude" value="@weatherData.latitude" />
+            <input type="hidden" name="longitude" value="@weatherData.longitude" />
+            <input type="hidden" name="days" value="+1" />
+            <input type="hidden" name="date" value="@ViewData["date"]" />
+            <button type="submit" class="favorite-button">Den dopředu</button>
+        </form>
+    </div>
+}
 
 <div class="weather-container">
     <h1>Předpověď počasí pro aktuální hodinu</h1>
     <div class="weather-item">
         @if (weatherData != null)
         {
-            <p class="label">Hodina:</p>
-            <p class="value">@DateTime.Now</p>
-            <p class="label">Teplota:</p>
+            <div class="icon-container">
+                <img src="@ViewData["Icon"]" alt="Weather Icon" class="weather-icon highlighted-icon">
+            </div>
+            <p class="label">Datum:</p>
+            <p class="value">@ViewData["date"]</p>
+            <p class="label">Aktuální Teplota:</p>
             <p class="value">@weatherData.hourly.temperature_2m[currentHourIndex] °C</p>
-            <p class="label">Srážky:</p>
+            <p class="label">Aktuální Srážky:</p>
             <p class="value">@weatherData.hourly.precipitation[currentHourIndex] mm</p>
             <!-- Další informace o počasí -->
         }
         <div class="button-container">
-            <form id="weatherForm" asp-controller="Home" asp-action="WeatherMore" method="post">
-                <button type="submit" class="custom-button">Zobrazit celou předpověď</button>
+            <form id="weatherForm" asp-controller="Home" asp-action="WeatherMore" method="get">
                 <input type="hidden" name="location" value="@ViewData["location"]" />
+                <input type="hidden" name="latitude" value="@weatherData.latitude" />
+                <input type="hidden" name="longitude" value="@weatherData.longitude" />
+                <input type="hidden" name="days" value="+1" />
+                <input type="hidden" name="date" value="@ViewData["date"]" />
+                <button type="submit" class="custom-button">Zobrazit celou předpověď</button>
             </form>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form id="addFavoriteForm" asp-controller="Home" asp-action="AddFavorite" method="get">
+                    <input type="hidden" name="location" value="@ViewData["location"]" />
+                <input type="hidden" name="latitude" value="@weatherData.latitude" />
+                <input type="hidden" name="longitude" value="@weatherData.longitude" />
+                <button type="submit" class="favorite-button">Uložit do oblíbených<span class="favorite-star">&#9733;</span></button>
+            </form>
+            }
         </div>
     </div>
-    
-
 </div>

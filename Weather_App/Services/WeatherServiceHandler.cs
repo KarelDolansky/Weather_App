@@ -2,22 +2,20 @@
 {
     public interface IWeatherServiceHandler
     {
-        public Task<string> CallApi(double latitude, double longitude);
+        public Task<string> CallApi(double latitude, double longitude, DateOnly date);
     }
 
-    public class WeatherServiceHandler: IWeatherServiceHandler
+    public class WeatherServiceHandler : IWeatherServiceHandler
     {
         private readonly HttpClient _httpClient;
-        private readonly IWeatherDataTransformations _weatherDataTransformations;
-        public WeatherServiceHandler(HttpClient httpClient,IWeatherDataTransformations weatherDataTransformations) 
+        public WeatherServiceHandler(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _weatherDataTransformations = weatherDataTransformations;
         }
 
-        public async Task<string> CallApi(double latitude, double longitude)
+        public async Task<string> CallApi(double latitude, double longitude, DateOnly date)
         {
-            string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m,precipitation,rain,showers,snowfall,snow_depth&timezone=Europe%2FBerlin&forecast_days=1";
+            string url = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=temperature_2m,precipitation&daily=weather_code&timezone=Europe%2FBerlin&start_date={date.Year}-{date.Month:D2}-{date.Day:D2}&end_date={date.Year}-{date.Month:D2}-{date.Day:D2}";
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -28,8 +26,7 @@
             }
             else
             {
-                // Handle API call errors (e.g., log the error)
-                throw new Exception($"API call failed with status code {response.StatusCode}");
+                throw new ExceptionApiCall("Api call failed " + response.StatusCode);
             }
         }
     }

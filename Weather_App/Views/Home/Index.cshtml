@@ -1,12 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Počasí";
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@if (User.Identity.IsAuthenticated)
+{
+    <button id="toggleSidebar" class="toggle-sidebar-button">☰ Menu</button>
+    <div id="favorite">
+        
+    </div>
 }
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-
 
 <div class="text-center">
     <h1 class="desplay-4">Počasí</h1>
-    <form id="weatherForm" asp-controller="Home" asp-action="Weather" method="post">
+    <form id="weatherform" asp-controller="Home" asp-action="Weather" method="get">
         <div>
             <input type="text" name="location" id="locationInput" required />
             <input type="submit" value="submit" />

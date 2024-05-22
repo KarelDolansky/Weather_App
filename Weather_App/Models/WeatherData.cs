@@ -1,7 +1,8 @@
 ﻿public record WeatherData(
     double latitude,
     double longitude,
-    Hourly hourly
+    Hourly hourly,
+    Daily daily
 );
 public record Hourly(
     List<string> time,
@@ -12,3 +13,6 @@ public record Hourly(
     List<double> snowfall,
     List<double> snow_depth
 );
+public record Daily(
+    List<int> weather_code
+    );
