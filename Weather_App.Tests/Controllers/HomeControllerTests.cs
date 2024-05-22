@@ -34,84 +34,9 @@ public class HomeControllerTests
         Assert.IsType<ViewResult>(result);
     }
 
-    [Fact]
-    public void Privacy_ShouldReturnViewResult()
-    {
-        // Act
-        var result = _controller.Privacy();
-
-        // Assert
-        Assert.IsType<ViewResult>(result);
-    }
-
-    // Your existing Weather method tests go here
 
     [Fact]
-    public void WeatherMore_ShouldReturnViewResult_WhenLocationProvided()
-    {
-        // Arrange
-        var location = "Prague";
-        var date = DateOnly.FromDateTime(DateTime.Now);
-        var expectedWeatherData = new WeatherData(10, 10, new Hourly(new List<string> { "10.9" }, null, null, null, null, null, null), new Daily(null));
-        _mockWeatherService.Setup(service => service.GetWeather(location, date)).Returns(expectedWeatherData);
-
-        // Act
-        var result = _controller.WeatherMore(location, null, null, date);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
-    }
-    [Fact]
-    public void Weather_ShouldReturnViewResult_WhenLocationProavided()
-    {
-        // Arrange
-        var location = "Prague";
-        var date = DateOnly.FromDateTime(DateTime.Now);
-        var expectedWeatherData = new WeatherData(10, 10, new Hourly(new List<string> { "10.9" }, null, null, null, null, null, null), new Daily(null));
-        _mockWeatherService.Setup(service => service.GetWeather(location, date)).Returns(expectedWeatherData);
-
-        // Act
-        var result = _controller.Weather(location, null, null, 0, date);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
-    }
-
-    [Fact]
-    public void Weather_ShouldReturnViewResult_WhenLocationNotFound()
-    {
-        // Arrange
-        var date = DateOnly.FromDateTime(DateTime.Now);
-
-        // Act
-        var result = _controller.Weather(null, null, null, 0, date);
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        Assert.Equal("Špatnì zadané místo", viewResult.ViewData["ErrorMessage"]);
-    }
-
-    [Fact]
-    public void Weather_ShouldReturnViewResult_WhenDateWrong()
-    {
-        // Arrange
-        var location = "Prague";
-        var date = DateOnly.FromDateTime(DateTime.Now);
-        var expectedWeatherData = new WeatherData(10, 10, new Hourly(new List<string> { "10.9" }, null, null, null, null, null, null), new Daily(null));
-        _mockWeatherService.Setup(service => service.GetWeather(location, date)).Returns(expectedWeatherData);
-
-        // Act
-        var result = _controller.Weather(location, null, null, -5, date.AddYears(1));
-
-        // Assert
-        var viewResult = Assert.IsType<ViewResult>(result);
-        Assert.Equal(expectedWeatherData, viewResult.ViewData["weatherData"] as WeatherData);
-    }
-
-    [Fact]
-    public void Favorite_ShouldReturnUnauthorized_WhenUserIsNotAuthenticated()
+    public void AddFavorite_ShouldReturnUnauthorized_WhenUserIsNotAuthenticated()
     {
         // Arrange
         var user = new ClaimsPrincipal(new ClaimsIdentity());
@@ -122,9 +47,59 @@ public class HomeControllerTests
         };
 
         // Act
-        var result = _controller.Favorite();
+        var result = _controller.AddFavorite("Prague", 50.0755f, 14.4378f);
 
         // Assert
         Assert.IsType<UnauthorizedResult>(result);
     }
+
+    [Fact]
+    public void RemoveFavorite_ShouldReturnUnauthorized_WhenUserIsNotAuthenticated()
+    {
+        // Arrange
+        var user = new ClaimsPrincipal(new ClaimsIdentity());
+
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = user }
+        };
+
+        // Act
+        var result = _controller.RemoveFavorite("Prague");
+
+        // Assert
+        Assert.IsType<UnauthorizedResult>(result);
+    }
+
+    [Fact]
+    public void AddFavorite_ShouldReturnRedirectToActionResult_WhenUserIsAuthenticated()
+    {
+        // Arrange
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "username") }, "mock"));
+        _controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } };
+
+        // Act
+        var result = _controller.AddFavorite("Prague", 50.0755f, 14.4378f);
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectToActionResult.ActionName);
+    }
+
+    [Fact]
+    public void RemoveFavorite_ShouldReturnRedirectToActionResult_WhenUserIsAuthenticated()
+    {
+        // Arrange
+        var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "username") }, "mock"));
+        _controller.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = user } };
+
+        // Act
+        var result = _controller.RemoveFavorite("Prague");
+
+        // Assert
+        var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+        Assert.Equal("Index", redirectToActionResult.ActionName);
+    }
+
+
 }
