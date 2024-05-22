@@ -23,14 +23,4 @@
 	<ItemGroup>
 		<InternalsVisibleTo Include="Weather_App.Tests" />
 	</ItemGroup>
-	<PropertyGroup>
-		<ExcludeFromCodeCoverage>*/Views/*</ExcludeFromCodeCoverage>
-		<ExcludeFromCodeCoverage>*/Areas/*</ExcludeFromCodeCoverage>
-		<ExcludeFromCodeCoverage>*/Data/*</ExcludeFromCodeCoverage>
-		<ExcludeFromCodeCoverage>Program.cs</ExcludeFromCodeCoverage>
-		<CollectCoverage>true</CollectCoverage>
-		<CoverletOutputFormat>cobertura</CoverletOutputFormat>
-	</PropertyGroup>
-
-
 </Project>
